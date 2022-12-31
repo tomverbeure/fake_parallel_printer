@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name "Raspberry Pico")(type "KiCad")(uri "${KIPRJMOD}/KiCad-RP-Pico/RP-Pico Libraries/MCU_RaspberryPi_and_Boards.pretty")(options "")(descr ""))
+)
