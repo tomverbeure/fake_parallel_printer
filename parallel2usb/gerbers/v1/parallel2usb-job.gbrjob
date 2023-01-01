@@ -5,7 +5,7 @@
       "Application": "Pcbnew",
       "Version": "6.0.10-86aedd382b~118~ubuntu20.04.1"
     },
-    "CreationDate": "2022-12-30T18:50:17-08:00"
+    "CreationDate": "2022-12-31T17:49:26-08:00"
   },
   "GeneralSpecs": {
     "ProjectId": {
@@ -14,7 +14,7 @@
       "Revision": "rev?"
     },
     "Size": {
-      "X": 87.984,
+      "X": 91.159,
       "Y": 53.694
     },
     "LayerNumber": 4,
@@ -34,7 +34,7 @@
       "PadToPad": 0.1,
       "PadToTrack": 0.1,
       "TrackToTrack": 0.1,
-      "MinLineWidth": 0.2,
+      "MinLineWidth": 0.1,
       "TrackToRegion": 0.508,
       "RegionToRegion": 0.508
     }
