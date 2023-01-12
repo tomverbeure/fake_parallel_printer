@@ -1,3 +1,4 @@
+**WORK IN PROGRESS!!! NOTHING IN HERE HAS BEEN TESTED**
 
 * [Parallel-Port Interface Powers Low Voltage Systems](https://www.analog.com/en/design-notes/parallelport-interface-powers-low-voltage-systems.html)
 
