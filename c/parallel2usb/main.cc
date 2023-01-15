@@ -119,9 +119,26 @@ uint8_t get_data()
     return d;
 }
 
+
+bool strobe_triggered = false;
+
+void strobe_callback(uint gpio, uint32_t events)
+{
+    strobe_triggered = true;
+    gpio_put(BUSY_PIN, 1);
+    printf("BOOM!");
+}
+
 int main() {
     stdio_init_all();
     setup_ios();
+
+    gpio_set_irq_enabled_with_callback(
+        nSTROBE_PIN,
+        GPIO_IRQ_EDGE_FALL, 
+        true,
+        &strobe_callback);
+
 
 #if 0
     int i=0;
@@ -132,10 +149,10 @@ int main() {
 #endif
 
     while(1){
-        if (gpio_get(nSTROBE_PIN) == 0){
-            gpio_put(BUSY_PIN, 1);
-            sleep_us(1);
+        if (strobe_triggered){
+            strobe_triggered = false;
             uint8_t d = get_data();
+            sleep_us(1);
             gpio_put(BUSY_PIN, 0);
             sleep_us(1);
             printf("%d ", d);
