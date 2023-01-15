@@ -121,24 +121,55 @@ uint8_t get_data()
 
 
 bool strobe_triggered = false;
+int nr_bytes = 0;
 
+#if 0
 void strobe_callback(uint gpio, uint32_t events)
+#else
+static void __not_in_flash_func(strobe_callback)()
+#endif
 {
-    strobe_triggered = true;
-    gpio_put(BUSY_PIN, 1);
-    printf("BOOM!");
+        gpio_put(BUSY_PIN, 1);
+        strobe_triggered = true;
+        gpio_acknowledge_irq(nSTROBE_PIN, GPIO_IRQ_EDGE_FALL);
+        uint8_t d = get_data();
+        sleep_us(1);
+        gpio_put(BUSY_PIN, 0);
+        sleep_us(1);
+        //printf("%d ", d);
+        putchar(d);
+        gpio_put(nACK_PIN, 0);
+        sleep_us(1);
+        gpio_put(nACK_PIN, 1);
 }
 
 int main() {
     stdio_init_all();
     setup_ios();
 
+#if 0
+    irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
+    irq_set_enabled(IO_IRQ_BANK0, true);
+#endif
+#if 0
     gpio_set_irq_enabled_with_callback(
         nSTROBE_PIN,
         GPIO_IRQ_EDGE_FALL, 
         true,
         &strobe_callback);
-
+    irq_set_priority(IO_IRQ_BANK0, 0);
+#endif
+#if 0
+    gpio_add_raw_irq_handler_with_order_priority_masked(
+        1<<nSTROBE_PIN, 
+        strobe_callback,
+        0);
+#endif
+#if 1
+    gpio_set_irq_enabled(nSTROBE_PIN, GPIO_IRQ_EDGE_FALL, true);
+    irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
+    irq_set_enabled(IO_IRQ_BANK0, true);
+#endif
 
 #if 0
     int i=0;
@@ -149,7 +180,11 @@ int main() {
 #endif
 
     while(1){
+        tight_loop_contents();
+
+#if 0
         if (strobe_triggered){
+            printf("Triggered!\n");
             strobe_triggered = false;
             uint8_t d = get_data();
             sleep_us(1);
@@ -160,6 +195,7 @@ int main() {
             sleep_us(1);
             gpio_put(nACK_PIN, 1);
         }
+#endif
     }
 }
 
