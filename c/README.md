@@ -28,4 +28,24 @@
 
         `inkscape -f ./screenshot.eps -w 1280 -y=255 -e screenshot.png`
 
+# Conversion for Advantest R3273
 
+    * ESC/P Gray: corruption seen
+    * ESC/P Mono S: corruption seen
+    * ESC/P Mono L: no corruption seen
+
+
+# PCL to PDF
+
+* [Ghostscript](https://ghostscript.com/releases/gpcldnld.html)
+
+    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -LPCL -sOutputFile=test.pdf -sDEVICE=bmp256 dump.pcl`
+
+    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -LPCL -sOutputFile=test.pdf -sDEVICE=pdfwrite dump.pcl`
+
+* [PrinterToPDF](https://github.com/tomverbeure/PrinterToPDF)
+
+    `/opt/printerToPDF/bin/printerToPDF -o output -f /opt/printerToPDF/lib/PrinterToPDF/font2/Epson-Standard.C16  dump.epson`
+
+    [Tweet by Sell My Retro](https://twitter.com/SellMyRetro/status/1614215674024398848)
+	
