@@ -10,6 +10,8 @@
 // .../pico-sdk/src/boards/include/boards/pico.h
 #define LED_PIN         PICO_DEFAULT_LED_PIN
 
+#define JUMPER_PIN      1
+
 //============================================================
 // 74LVC161284 control
 //============================================================
@@ -56,6 +58,10 @@ void setup_ios()
     gpio_put(LED_PIN, 0);
     sleep_ms(250);
     gpio_put(LED_PIN, 1);
+
+    gpio_init(JUMPER_PIN);
+    gpio_set_dir(JUMPER_PIN, GPIO_IN);
+    gpio_set_pulls(JUMPER_PIN, true, false);     // Pullup
 
     gpio_init(nSTROBE_PIN);
     gpio_set_dir(nSTROBE_PIN, GPIO_IN);
@@ -122,22 +128,19 @@ uint8_t get_data()
 
 bool strobe_triggered = false;
 int nr_bytes = 0;
+uint32_t checksum = 0;
 
-#if 0
-void strobe_callback(uint gpio, uint32_t events)
-#else
 static void __not_in_flash_func(strobe_callback)()
-#endif
 {
         gpio_put(BUSY_PIN, 1);
-        strobe_triggered = true;
         gpio_acknowledge_irq(nSTROBE_PIN, GPIO_IRQ_EDGE_FALL);
         uint8_t d = get_data();
         sleep_us(1);
         gpio_put(BUSY_PIN, 0);
         sleep_us(1);
-        //printf("%d ", d);
         putchar(d);
+        checksum += d;
+        ++nr_bytes;
         gpio_put(nACK_PIN, 0);
         sleep_us(1);
         gpio_put(nACK_PIN, 1);
@@ -145,57 +148,25 @@ static void __not_in_flash_func(strobe_callback)()
 
 int main() {
     stdio_init_all();
+    stdio_set_translate_crlf(&stdio_usb, false);
     setup_ios();
 
-#if 0
-    irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
-    irq_set_enabled(IO_IRQ_BANK0, true);
-#endif
-#if 0
-    gpio_set_irq_enabled_with_callback(
-        nSTROBE_PIN,
-        GPIO_IRQ_EDGE_FALL, 
-        true,
-        &strobe_callback);
-    irq_set_priority(IO_IRQ_BANK0, 0);
-#endif
-#if 0
-    gpio_add_raw_irq_handler_with_order_priority_masked(
-        1<<nSTROBE_PIN, 
-        strobe_callback,
-        0);
-#endif
-#if 1
     gpio_set_irq_enabled(nSTROBE_PIN, GPIO_IRQ_EDGE_FALL, true);
     irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
     irq_set_enabled(IO_IRQ_BANK0, true);
-#endif
-
-#if 0
-    int i=0;
-    while(1){
-        printf("%d ", i);
-        ++i;
-    }
-#endif
 
     while(1){
-        tight_loop_contents();
+//        tight_loop_contents();
+        if (gpio_get(JUMPER_PIN) == 0){
+            printf("sum: %d, nr_bytes: %d\n", checksum, nr_bytes);
+            checksum = 0;
+            nr_bytes = 0;
 
-#if 0
-        if (strobe_triggered){
-            printf("Triggered!\n");
-            strobe_triggered = false;
-            uint8_t d = get_data();
-            sleep_us(1);
-            gpio_put(BUSY_PIN, 0);
-            sleep_us(1);
-            printf("%d ", d);
-            gpio_put(nACK_PIN, 0);
-            sleep_us(1);
-            gpio_put(nACK_PIN, 1);
+            sleep_ms(100);
+            while(gpio_get(JUMPER_PIN) == 0)
+                ;
+            sleep_ms(100);
         }
-#endif
     }
 }
 

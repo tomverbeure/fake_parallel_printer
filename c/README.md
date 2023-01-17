@@ -2,7 +2,7 @@
 
 # Capture serial port
 
-`(stty raw; cat > screenshot.eps) < /dev/ttyACM0`
+`(stty -echo raw; cat > screenshot.eps) < /dev/ttyACM0`
 
 # Conversion TDS 420A
 
@@ -39,9 +39,13 @@
 
 * [Ghostscript](https://ghostscript.com/releases/gpcldnld.html)
 
-    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -LPCL -sOutputFile=test.pdf -sDEVICE=bmp256 dump.pcl`
+    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -sOutputFile=test.png -sDEVICE=png256 -g2000x1500 -r300x300  sa_pcl_s_color_s_a.pcl`
 
-    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -LPCL -sOutputFile=test.pdf -sDEVICE=pdfwrite dump.pcl`
+    Best result so far:
+
+    `~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -sOutputFile=test.png -sDEVICE=png256 -g8000x8000 -r600x600 sa_pcl_s_color_s_a.pcl`
+
+    `convert test.png -filter point -resize 2000  test2.png`
 
 * [PrinterToPDF](https://github.com/tomverbeure/PrinterToPDF)
 
