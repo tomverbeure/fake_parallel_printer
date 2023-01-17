@@ -1,0 +1,5 @@
+(sym_lib_table
+  (lib (name "sn74lvc8t245")(type "KiCad")(uri "${KIPRJMOD}/sn74lvc8t245.kicad_sym")(options "")(descr ""))
+  (lib (name "RPi_Pico")(type "KiCad")(uri "${KIPRJMOD}/KiCad-RP-Pico/RP-Pico Libraries/MCU_RaspberryPi_and_Boards.kicad_sym")(options "")(descr ""))
+  (lib (name "74lvc161284")(type "KiCad")(uri "${KIPRJMOD}/74lvc161284.kicad_sym")(options "")(descr ""))
+)
