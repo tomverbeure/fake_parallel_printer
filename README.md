@@ -2,9 +2,9 @@
 
 # PCB v1
 
-![3D render of PCB v1](./parallel2usb_v2/parallel2usb_v1_3d.png)
+![3D render of PCB v1](./parallel2usb_v1/parallel2usb_v1_3d.png)
 
-[Schematic of PCB v1](./parallel2usb_v2/parallel2usb_v1.pdf)
+[Schematic of PCB v1](./parallel2usb_v1/parallel2usb_v1.pdf)
 
 # PCB v2
 
