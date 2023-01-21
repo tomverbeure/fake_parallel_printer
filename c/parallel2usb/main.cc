@@ -36,6 +36,9 @@
 #define DIR_PIN_V1      16
 #define DIR_PIN_V2      17
 
+#define DIR_HOST_TO_PRINTER     0
+#define DIR_PRINTER_TO_HOST     1
+
 //============================================================
 // Host to device 
 //============================================================
@@ -114,25 +117,33 @@ int sel_pin;
 
 void setup_ios()
 {
-    gpio_init(REV_PIN);
+    // The REV pin (GPIO28) is used to differentiate between revision
+    // 1 and 2 of the PCB. 
+    // Revision 1 of the PCB has this pin floating while revision 2 has
+    // it strapped to ground. If we enable the pullup on this GPIO,
+    // this pin will read back a logic value of 1 for revision 1 and a
+    // value of 0 for revision 2.
+    gpio_init(REV_PIN); 
     gpio_set_dir(REV_PIN, GPIO_IN);
+    sleep_us(10);
     gpio_pull_up(REV_PIN);
 
     board_rev = gpio_get(REV_PIN) == 1 ? 1 : 2;
 
+    // Assign pin function to pin number based on board revision.
     jumper_pin    = board_rev == 1 ? JUMPER_PIN_V1  : JUMPER_PIN_V2; 
 
-    dir_pin       = board_rev == 1 ? DIR_PIN_V1  : DIR_PIN_V2; 
-    hd_pin        = board_rev == 1 ? HD_PIN_V1   : HD_PIN_V2; 
+    dir_pin       = board_rev == 1 ? DIR_PIN_V1     : DIR_PIN_V2; 
+    hd_pin        = board_rev == 1 ? HD_PIN_V1      : HD_PIN_V2; 
 
-    d0_pin        = board_rev == 1 ? D0_PIN_V1 : D0_PIN_V2;
-    d1_pin        = board_rev == 1 ? D1_PIN_V1 : D1_PIN_V2;
-    d2_pin        = board_rev == 1 ? D2_PIN_V1 : D2_PIN_V2;
-    d3_pin        = board_rev == 1 ? D3_PIN_V1 : D3_PIN_V2;
-    d4_pin        = board_rev == 1 ? D4_PIN_V1 : D4_PIN_V2;
-    d5_pin        = board_rev == 1 ? D5_PIN_V1 : D5_PIN_V2;
-    d6_pin        = board_rev == 1 ? D6_PIN_V1 : D6_PIN_V2;
-    d7_pin        = board_rev == 1 ? D7_PIN_V1 : D7_PIN_V2;
+    d0_pin        = board_rev == 1 ? D0_PIN_V1      : D0_PIN_V2;
+    d1_pin        = board_rev == 1 ? D1_PIN_V1      : D1_PIN_V2;
+    d2_pin        = board_rev == 1 ? D2_PIN_V1      : D2_PIN_V2;
+    d3_pin        = board_rev == 1 ? D3_PIN_V1      : D3_PIN_V2;
+    d4_pin        = board_rev == 1 ? D4_PIN_V1      : D4_PIN_V2;
+    d5_pin        = board_rev == 1 ? D5_PIN_V1      : D5_PIN_V2;
+    d6_pin        = board_rev == 1 ? D6_PIN_V1      : D6_PIN_V2;
+    d7_pin        = board_rev == 1 ? D7_PIN_V1      : D7_PIN_V2;
 
     n_strobe_pin  = board_rev == 1 ? nSTROBE_PIN_V1 : nSTROBE_PIN_V2; 
     n_autof_pin   = board_rev == 1 ? nAUTOF_PIN_V1  : nAUTOF_PIN_V2; 
@@ -156,7 +167,7 @@ void setup_ios()
 
     gpio_init(dir_pin);
     gpio_set_dir(dir_pin, GPIO_OUT);
-    gpio_put(dir_pin, 0);
+    gpio_put(dir_pin, DIR_HOST_TO_PRINTER);
 
     gpio_init(hd_pin);
     gpio_set_dir(hd_pin, GPIO_OUT);

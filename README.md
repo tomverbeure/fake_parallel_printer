@@ -127,3 +127,5 @@ device to host:
 * [Arduino: Read data from parallel port](https://forum.arduino.cc/t/read-data-from-parallel-port/105648/15)
 
  * [Rue's Parallel2Serial](https://github.com/ruenahcmohr/Parallel2Serial)
+
+
