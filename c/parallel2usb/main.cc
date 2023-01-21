@@ -6,6 +6,9 @@
 #include "pico/stdlib.h"
 #include "hardware/clocks.h"
 
+#define ACK_DELAY_US            1
+#define ACK_DURATION_US         2
+
 // Pins are defined in
 // .../pico-sdk/src/boards/include/boards/pico.h
 #define LED_PIN         PICO_DEFAULT_LED_PIN
@@ -19,9 +22,16 @@
 // 74LVC161284 control
 //============================================================
 
-// HD=1 -> totempole output high drive. 0 -> pullup high drive
+// HD
+// 1 -> totempole output high drive
+// 0 -> pullup high drive
+// A value of 1 will result in much faster rising edges of BUSY and nACK.
 #define HD_PIN_V1       17  
 #define HD_PIN_V2       16  
+
+#define HD_PULLUP       0 
+#define HD_HIGH_DRIVE   1 
+
 // DIR=0 -> data from host to device. 1 -> from device to host
 #define DIR_PIN_V1      16
 #define DIR_PIN_V2      17
@@ -150,7 +160,7 @@ void setup_ios()
 
     gpio_init(hd_pin);
     gpio_set_dir(hd_pin, GPIO_OUT);
-    gpio_put(hd_pin, 0);
+    gpio_put(hd_pin, HD_HIGH_DRIVE);
 
     gpio_init(jumper_pin);
     gpio_set_dir(jumper_pin, GPIO_IN);
@@ -224,21 +234,31 @@ uint8_t get_data()
 int nr_bytes = 0;
 uint32_t checksum = 0;
 
-// __not_in_flash_func attribute increase the execution performance
-// that's necessary to react to nSTROBE fast enough to assert BUSY.
+// __not_in_flash_func attribute increase the CPU performance
+// The goal was to make sure that BUSY could be asserted before nSTROBE gets
+// deasserted (which can happen after only 500ns.)
+//
+// However, testing on my equipment showed that printing works even when you never
+// assert BUSY at all.
 static void __not_in_flash_func(strobe_callback)()
 {
         gpio_put(busy_pin, 1);
+
         gpio_acknowledge_irq(n_strobe_pin, GPIO_IRQ_EDGE_FALL);
         uint8_t d = get_data();
-        sleep_us(1);
-        gpio_put(busy_pin, 0);
-        sleep_us(1);
         putchar(d);
         checksum += d;
         ++nr_bytes;
+
+        gpio_put(busy_pin, 0);
+
+        // Small delay between BUSY deassertion and ACK pulse.
+        // Not sure if this is necessary, but it's what others do...
+        sleep_us(ACK_DELAY_US);
+
+        // Pulse ACK low.
         gpio_put(n_ack_pin, 0);
-        sleep_us(1);
+        sleep_us(ACK_DURATION_US);
         gpio_put(n_ack_pin, 1);
 }
 
@@ -252,13 +272,15 @@ int main() {
     irq_set_enabled(IO_IRQ_BANK0, true);
 
     while(1){
-//        tight_loop_contents();
+        // Plugging in the jumper prints this out this debug information.
+        // If you do this while the host is printing, the print data will
+        // be corrupted..
         if (gpio_get(jumper_pin) == 0){
             printf("sum: %d, nr_bytes: %d\n", checksum, nr_bytes);
             checksum = 0;
             nr_bytes = 0;
 
-            // These sleeps are a crude debounce...
+            // These delays are a crude debounce...
             sleep_ms(200);
             while(gpio_get(jumper_pin) == 0)
                 ;
