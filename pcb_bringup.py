@@ -1,3 +1,5 @@
+# Micropython script to bring up PCV v1.
+
 import board
 import digitalio
 import time
@@ -120,12 +122,12 @@ if False:
 while False:
     led.value           = True
     test_pin.value      = True
-    sel_pin.value     = True
+    sel_pin.value       = True
     time.sleep(1)
     test_inputs()
     led.value           = False
     test_pin.value      = False
-    sel_pin.value     = False
+    sel_pin.value       = False
     time.sleep(1)
     test_inputs()
     pass
@@ -165,13 +167,4 @@ error_pin.value  = True
 while True:
     print(f"nStrobe: %d, nAUTOF: %d, nINIT: %d, nSELIN: %d, data: %d" % 
             (strobe_pin.value, autof_pin.value, init_pin.value, selin_pin.value, get_data()))
-
-    if strobe_pin.value == False:
-        busy_pin.value = True
-        data = get_data()
-        ack_pin.value = False
-        time.sleep(0.000002)
-        ack_pin.value = True
-        print(data)
-        busy_pin.value = False
 
