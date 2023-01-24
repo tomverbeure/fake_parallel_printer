@@ -70,18 +70,18 @@ def main():
         usage()
         sys.exit(3)
 
+    print("fake printer:")
     if verbose:
-        print("fake printer:")
         print(f"    verbose = {verbose}")
         print(f"    port    = {port}")
         print(f"    timeout = {timeout}")
         print(f"    prefix  = {prefix}")
         print(f"    suffix  = {suffix}")
         print(f"    page nr = {page_nr}")
+    sys.stdout.flush()
 
     with serial.Serial(port, timeout=1) as ser:
         while True:
-            # Not currently printing...
             d = ser.read(1024)
             start_time = time.time()
             last_received_time = start_time
@@ -110,6 +110,7 @@ def main():
                     print()
                     print(f"{bytes_received} bytes received in {int(duration)}s. ({int(bytes_received/duration)} bytes/s)")
                     print(f"No printer data received for {timeout} seconds. Closing printer capture file.")
+                    sys.stdout.flush()
 
                 page_nr += 1
 
