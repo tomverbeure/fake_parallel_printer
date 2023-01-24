@@ -7,7 +7,24 @@ import time
 
 
 def usage():
-    print(f"{sys.argv[0]} -p|--port= <serial port> -t <end of file timeout>")
+    print(f"""{sys.argv[0]}
+-p <serial port>, --port=<serial port>  : serial port device. E.g. -p /dev/ttyACM0, --port=COM3. No default. Required.
+[-t <time>, --timeout=<time>]           : idle time, in seconds, after which an end-of-page is declared. Default: 2
+[-f <prefix>, --prefix=<prefix>]        : fixed filename prefix of generated capture files. Default: fake_printer_output_
+[-s <suffix>, --suffix=<suffix>]        : filename extension of generated capture files. Default: prtcap
+[-n <page nr>, --pagenr=<page nr>]      : starting number of the generated capture file. Default: 0
+[-v, --verbose]                         : print a bit more info
+[-h, --help]                            : print this information
+
+fake_printer.py listens to the USB serial port to which a fake printer tool is connected.
+When it detects incoming traffic, it forwards the data to a capture file (default: fake_printer_output_0.prtcap).
+
+If no traffic is detected for a specified timeout value, the end of a print operation is assumed
+and the capture file is closed. When new data is detected after that, new capture file is opened with
+an page number that is increased by one.
+
+Example: ./fake_printer --port=/dev/ttyACM0 -t 2 --prefix=oscilloscope_file -s pcl
+    """)
     pass
 
 def main():
@@ -22,6 +39,7 @@ def main():
         optlist, args = getopt.getopt(sys.argv[1:], "hvp:t:s:n:f:", ["help", "verbose", "port=", "prefix=", "suffix=", "timeout=", "--pagenr="])
     except getopt.GetoptError as err:
         print(err)
+        print()
         usage()
         sys.exit(1)
 
@@ -38,11 +56,19 @@ def main():
             page_nr = int(a)
         elif o in ("-v", "--verbose"):
             verbose = True
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit(0)
 
     if len(args) > 0:
-        print(f"Unprocessed arguments: {args}")
+        print(f"Unprocessed arguments: {args}\n")
         usage()
-        sys.exit(1)
+        sys.exit(2)
+
+    if port is None:
+        print("No serial port specified.\n")
+        usage()
+        sys.exit(3)
 
     if verbose:
         print("fake printer:")
@@ -57,7 +83,8 @@ def main():
         while True:
             # Not currently printing...
             d = ser.read(1024)
-            last_received_time = time.time()
+            start_time = time.time()
+            last_received_time = start_time
 
             if len(d) > 0:
                 filename = f"{prefix}{page_nr}.{suffix}"
@@ -78,8 +105,10 @@ def main():
                             prt_file.write(d)
                             last_received_time = time.time()
 
+                    end_time = time.time() - timeout
+                    duration = end_time - start_time
                     print()
-                    print(f"{bytes_received} bytes received.")
+                    print(f"{bytes_received} bytes received in {int(duration)}s. ({int(bytes_received/duration)} bytes/s)")
                     print(f"No printer data received for {timeout} seconds. Closing printer capture file.")
 
                 page_nr += 1
