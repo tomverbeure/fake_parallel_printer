@@ -22,14 +22,14 @@ the best one to build. The firmware is design work for both PCB versions.
 ![3D render of PCB v1](./parallel2usb_v1/parallel2usb_v1_3d.png)
 
 * KiCAD database of the PCB: [`./parallel2usb_v1`](./parallel2usb_v1)
-* [Schematic of PCB v1](./parallel2usb_v1/parallel2usb_v1.pdf)
+* [Schematic of PCB v1](./parallel2usb_v1/parallel2usb_v1_schematic.pdf)
 
 ## PCB v2
 
 ![3D render of PCB v2](./parallel2usb_v2/parallel2usb_v2_3d.png)
 
 * KiCAD database of the PCB: [`./parallel2usb_v2`](./parallel2usb_v2)
-* [Schematic of PCB v2](./parallel2usb_v2/parallel2usb_v2.pdf)
+* [Schematic of PCB v2](./parallel2usb_v2/parallel2usb_v2_schematic.pdf)
 
 A Digikey cart with all the components to populate version 2 of the PCB can
 be found [here](https://www.digikey.com/short/mcb8vf27). Not all
