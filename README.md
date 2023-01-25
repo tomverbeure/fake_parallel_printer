@@ -47,12 +47,12 @@ To make changes and recompile yourself:
   [Raspberry Pico SDK](https://github.com/raspberrypi/pico-sdk).
 * Build the code:
 
-    ```sh
-mkdir -p ./c/build 
-cd ./c/build`
-cmake ..
-make
-    ```
+
+      mkdir -p ./c/build
+      cd ./c/build
+      cmake ..
+      make
+
 * If all goes well, a new `parallel2usb.uf2` will be waiting in
   `./c/build/parallel2usb`.
 
