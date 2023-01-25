@@ -30,7 +30,7 @@ Example: ./fake_printer --port=/dev/ttyACM0 -t 2 --prefix=oscilloscope_file -s p
 def main():
     port = None
     timeout = 2
-    prefix = "fake_printer_output_"
+    prefix = "printer_capture_"
     suffix = "prtcap"
     page_nr = 0
     verbose = False
@@ -98,8 +98,7 @@ def main():
                     while time.time() < (last_received_time+timeout):
                         d = ser.read(1024)
                         if len(d) > 0:
-                            if verbose:
-                                print(".", end="")
+                            print(".", end="")
                             sys.stdout.flush()
                             bytes_received += len(d)
                             prt_file.write(d)

@@ -64,7 +64,7 @@ To make changes and recompile yourself:
 * Issue a print operation on the host.
 * A new file will be generated for each print operation
 
-## Converting Parallel Port Captured File
+## Converting a Parallel Port Captured File
 
 * PCL: use [Ghostscript](https://ghostscript.com/releases/gpcldnld.html)
 
