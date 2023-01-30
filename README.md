@@ -7,15 +7,14 @@ dongle with a DB-25 connector that plugs into the parallel printer port
 that was available on nearly all computers and equipment in the eighties
 and nineties.
 
-Check out these two blog posts for a detailed description of the design,
+Check out this blog post for a detailed description of the design,
 and build and usage instructions:
 
-* ... To be done ...
-* ... To be done ...
+* [Fake Parallel Printer - A Parallel Port Traffic Capturing Tool](https://tomverbeure.github.io/2023/01/24/Fake-Parallel-Printer-Capture-Tool-HW.html)
 
 There are 2 versions of the PCB. Revision 2 only uses 2 layers and doesn't
 stick out as much out of the device in which is plugged in. It's probably
-the best one to build. The firmware is design work for both PCB versions.
+the best one to build. The firmware is designed to work for both PCB versions.
 
 ## PCB v1
 
