@@ -24,7 +24,7 @@ the best one to build. The firmware is designed to work for both PCB versions.
 
 ## PCB v2
 
-**WARNING: v2 hasn't been tested!!!*
+**WARNING: v2 hasn't been tested!!!**
 
 ![3D render of PCB v2](./parallel2usb_v2/parallel2usb_v2_3d.png)
 
