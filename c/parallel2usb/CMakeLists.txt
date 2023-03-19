@@ -6,7 +6,7 @@ add_executable(parallel2usb)
 target_sources(parallel2usb PRIVATE main.cc 
     )
 
-target_link_libraries(parallel2usb PRIVATE pico_stdlib)
+target_link_libraries(parallel2usb PRIVATE pico_stdlib pico_multicore)
 pico_add_extra_outputs(parallel2usb)
 pico_enable_stdio_usb(parallel2usb 1)
 pico_enable_stdio_uart(parallel2usb 0)

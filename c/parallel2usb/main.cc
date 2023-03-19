@@ -4,9 +4,10 @@
 #include <math.h>
 
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
+
 #include "hardware/clocks.h"
 
-#define ACK_DELAY_US            1
 #define ACK_DURATION_US         2
 
 // Pins are defined in
@@ -86,6 +87,14 @@
 #define BUSY_PIN_V2     14
 #define PE_PIN_V2       15
 #define SEL_PIN_V2      18
+
+//============================================================
+// Debug pins
+//============================================================
+
+#define DEBUG0_PIN      26
+#define DEBUG1_PIN      27
+#define DEBUG2_PIN      28
 
 int board_rev;
 
@@ -226,6 +235,18 @@ void setup_ios()
     gpio_init(sel_pin);
     gpio_set_dir(sel_pin, GPIO_OUT);
     gpio_put(sel_pin, 1);
+
+    gpio_init(DEBUG0_PIN);
+    gpio_set_dir(DEBUG0_PIN, GPIO_OUT);
+    gpio_put(DEBUG0_PIN, 0);
+
+    gpio_init(DEBUG1_PIN);
+    gpio_set_dir(DEBUG1_PIN, GPIO_OUT);
+    gpio_put(DEBUG1_PIN, 0);
+
+    gpio_init(DEBUG2_PIN);
+    gpio_set_dir(DEBUG2_PIN, GPIO_OUT);
+    gpio_put(DEBUG2_PIN, 0);
 }
 
 uint8_t get_data()
@@ -251,38 +272,52 @@ uint32_t checksum = 0;
 //
 // However, testing on my equipment showed that printing works even when you never
 // assert BUSY at all.
+
+volatile bool strobe_detect = false;
+volatile bool error         = false;
 static void __not_in_flash_func(strobe_callback)()
 {
         gpio_put(busy_pin, 1);
+        gpio_put(DEBUG0_PIN, 1);
 
-        gpio_acknowledge_irq(n_strobe_pin, GPIO_IRQ_EDGE_FALL);
         uint8_t d = get_data();
-        putchar(d);
+        multicore_fifo_push_blocking(d);
         checksum += d;
         ++nr_bytes;
 
         gpio_put(busy_pin, 0);
 
-        // Small delay between BUSY deassertion and ACK pulse.
-        // Not sure if this is necessary, but it's what others do...
-        sleep_us(ACK_DELAY_US);
-
         // Pulse ACK low.
         gpio_put(n_ack_pin, 0);
         sleep_us(ACK_DURATION_US);
         gpio_put(n_ack_pin, 1);
+
+        gpio_put(DEBUG0_PIN, 0);
+        gpio_acknowledge_irq(n_strobe_pin, GPIO_IRQ_EDGE_FALL);
+}
+
+void core1_main()
+{
+    setup_ios();
+
+    irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
+    irq_set_enabled(IO_IRQ_BANK0, true);
+    irq_set_priority(IO_IRQ_BANK0, PICO_HIGHEST_IRQ_PRIORITY);
+
+    gpio_set_irq_enabled(n_strobe_pin, GPIO_IRQ_EDGE_FALL, true);
+    gpio_set_irq_enabled(n_strobe_pin, GPIO_IRQ_EDGE_RISE, false);
 }
 
 int main() {
     stdio_init_all();
     stdio_set_translate_crlf(&stdio_usb, false);
-    setup_ios();
 
-    gpio_set_irq_enabled(n_strobe_pin, GPIO_IRQ_EDGE_FALL, true);
-    irq_set_exclusive_handler(IO_IRQ_BANK0, strobe_callback);
-    irq_set_enabled(IO_IRQ_BANK0, true);
+    multicore_launch_core1(core1_main);
 
     while(1){
+        uint8_t c = multicore_fifo_pop_blocking();
+        putchar(c);
+
         // Plugging in the jumper prints this out this debug information.
         // If you do this while the host is printing, the print data will
         // be corrupted..
