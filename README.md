@@ -90,7 +90,10 @@ convert hp_osc_0.png -crop 1294x971+142+80 hp_osc_0_cropped.png
 
 * Advantest R3273
 
-    * Config printer: Config -> Copy Config -> Printer: Copy Mode=S-Color S, Printer Command=HP PCL
+    * Config printer: Config -> Copy Config -> Printer: 
+
+        ![Advantest R3273 printer config screen](./docs/advantest_r3273_printer_config.png)
+
     * To print: Copy
     * To convert:
 
