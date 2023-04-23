@@ -82,11 +82,11 @@ To make changes and recompile yourself:
 
 * HP Infinium
 
-    ```
+```
 fake_printer.py --port=/dev/ttyACM0 -t 2 -v --prefix=hp_osc_ -s eps
 inkscape -f ./hp_osc_0.eps -w 1580 -y=255 -e hp_osc_0.png
 convert hp_osc_0.png -crop 1294x971+142+80 hp_osc_0_cropped.png
-    ```
+```
 
 * Advantest R3273
 
@@ -97,9 +97,9 @@ convert hp_osc_0.png -crop 1294x971+142+80 hp_osc_0_cropped.png
     * To print: Copy
     * To convert:
 
-        ```
+```
 ~/tools/ghostpcl-10.0.0-linux-x86_64/gpcl6-1000-linux-x86_64 -dNOPAUSE -sOutputFile=test.png -sDEVICE=png256 -g8000x8000 -r600x600 r3273_0.pcl
 convert test.png -filter point -resize 2000  test2.png
 convert test2.png -crop 640x480+315+94 test3.png
-        ```
+```
 
