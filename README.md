@@ -74,9 +74,9 @@ To make changes and recompile yourself:
 
     `/opt/printerToPDF/bin/printerToPDF -o output -f /opt/printerToPDF/lib/PrinterToPDF/font2/Epson-Standard.C16 print_cap.esc_p`
 
-* Encapsulated Postscript: use Inkscape
+* Encapsulated Postscript: use Ghostscript and ImageMagick to add a background if necessary.  Note that some scopes (TDS 684B) may emit a few chunks of comments that `fake_printer.py` will get with multiple-second delays, and they need to be concatenated together to form a valid `eps` file.
 
-    `inkscape -f ./print_cap.eps -w 1280 -y=255 -e output.png`
+    `gs -dSAFER -dBATCH -dNOPAUSE -dEPSCrop -sDEVICE=pngalpha -r300 -sOutputFile=ph1-zoomout.png ph1-zoomout.eps; convert -background black -alpha remove -alpha off ph1-zoomout.png ph1-zoomout.png`
 
 # Conversions
 
